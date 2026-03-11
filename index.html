@@ -15,6 +15,12 @@
 
     <h1>你好，我是李小明</h1>
 
+    <!-- 新增：XSS漏洞模块 - 从URL参数获取name并直接渲染 -->
+    <div class="section">
+        <h2>👋 访客问候</h2>
+        <p id="greeting">欢迎访问我的主页！</p>
+    </div>
+
     <div class="section contact-info">
         <h2>📞 联系方式</h2>
         <p>邮箱：lixiaoming@example.com</p>
@@ -56,6 +62,21 @@
             <li>2023年校级数学建模竞赛三等奖</li>
         </ul>
     </div>
+
+    <!-- 核心漏洞代码：获取URL中name参数并直接插入页面，无过滤 -->
+    <script>
+        // 从URL参数中提取name值
+        function getUrlParam(name) {
+            const reg = new RegExp(`(^|&)${name}=([^&]*)(&|$)`);
+            const r = window.location.search.substr(1).match(reg);
+            return r ? decodeURIComponent(r[2]) : '';
+        }
+        // 直接将参数值插入页面（未过滤，导致XSS）
+        const visitorName = getUrlParam('name');
+        if (visitorName) {
+            document.getElementById('greeting').innerHTML = `你好，${visitorName}！`;
+        }
+    </script>
 
 </body>
 </html>
